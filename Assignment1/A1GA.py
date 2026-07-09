@@ -5,7 +5,7 @@ from numpy import random
 
 def fitness(x,y):
     #want to minimize function so lower fitness better
-    fit = 20 + (x**2 + 10*math.cos(10*math.pi*x)) + (y**2 + 10*math.cos(10*math.pi*y)) #fitness is just function value
+    fit = 20 + (x**2 - 10*math.cos(2*math.pi*x)) + (y**2 - 10*math.cos(2*math.pi*y)) #fitness is just function value
     if (x**2 + y**2) > 20 or (x+y) < 1:
         fit = fit + 100 #if outside of bounds penalize hard
     return fit
