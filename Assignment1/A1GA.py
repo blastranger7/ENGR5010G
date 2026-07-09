@@ -4,13 +4,14 @@ import math
 from numpy import random
 
 def fitness(x,y):
+    #want to minimize function so lower fitness better
     fit = 20 + (x**2 + 10*math.cos(10*math.pi*x)) + (y**2 + 10*math.cos(10*math.pi*y)) #fitness is just function value
     if (x**2 + y**2) > 20 or (x+y) < 1:
         fit = fit + 100 #if outside of bounds penalize hard
     return fit
 
 def initPop(pop_size):
-    x = random.uniform(low=-5.0, high=5.0, size=pop_size) #get random number between -5:5
+    x = random.uniform(low=-5.0, high=5.0, size=pop_size) #get random float between -5:5
     y = random.uniform(low=-5.0, high=5.0, size=pop_size)
     fit = np.empty(pop_size)
     for ii in range(pop_size): #for each x,y pair get fitness
@@ -18,15 +19,16 @@ def initPop(pop_size):
     return x,y,fit
 
 def tournamentSelection(k,x,y,fit):
-    best_x = np.empty(np.size(fit)) 
-    best_y = np.empty(np.size(fit))
-    best_fit = np.empty(np.size(fit))
+    pop_size = np.size(fit)
+    best_x = np.empty(pop_size) 
+    best_y = np.empty(pop_size)
+    best_fit = np.empty(pop_size)
 
     for jj in range(np.size(fit)):
         opt_fit = 1000
         opt_p = 0
-        for ii in range(k):
-            p = random.randint(np.size(fit))
+        for ii in range(k): #select k random chromosomes and pick the best one
+            p = random.randint(pop_size)
             if fit[p] < opt_fit:
                 opt_fit = fit[p]
                 opt_p = p
@@ -37,17 +39,18 @@ def tournamentSelection(k,x,y,fit):
     return best_x, best_y, best_fit
 
 def crossover(x,y):
-    child_x = x
-    child_y = np.flip(y)
-    return child_x, child_y
+    x = x
+    y = np.flip(y) #reverse y for crossover
+    return x, y
 
 def mutate(x, y, rate):
-    fit = np.empty(np.size(x))
-    for ii in range(np.size(x)):
-        if random.rand() < rate: #randomly swap chromosomes with a certain probability
+    pop_size = np.size(x)
+    fit = np.empty(pop_size)
+    for ii in range(pop_size):
+        if random.rand() < rate: #mutate with random noise
            x[ii] = x[ii] + random.rand()
            y[ii] = y[ii] + random.rand()
-        fit[ii] = fitness(x[ii], y[ii])
+        fit[ii] = fitness(x[ii], y[ii]) 
     return x, y, fit
 
 def main():
