@@ -6,7 +6,6 @@ from numpy import random
 def fitness(x,y):
     #want to minimize function so lower fitness better
     fit = 20 + (x**2 - 10*math.cos(2*math.pi*x)) + (y**2 - 10*math.cos(2*math.pi*y)) #fitness is just function value
-    #fit = x**2 + y**2 #For Part 2, Task2
     if (x**2 + y**2) > 20 or (x+y) < 1:
         fit = fit + 100 #if outside of bounds penalize hard
     return fit
@@ -54,12 +53,27 @@ def mutate(x, y, rate):
         fit[ii] = fitness(x[ii], y[ii]) 
     return x, y, fit
 
+def gradDescent(x,y,num_iterations,alpha):
+    pop_size = np.size(x)
+    z = np.empty(pop_size)
+    for ii in range(num_iterations):
+        for jj in range(pop_size):
+            zx = 2*x[jj] + 20*math.pi*math.sin(2*math.pi*x[jj])
+            zy = 2*y[jj] + 20*math.pi*math.sin(2*math.pi*y[jj])
+            x[jj] = x[jj] - alpha*zx
+            y[jj] = y[jj] - alpha*zy
+            z[jj] = fitness(x[jj], y[jj])
+    return x, y, z
+
 def main():
     #initialize variables
     pop_size = 500
     num_iterations = 100
     k = 10
     mutation_rate = 0.05
+
+    gd_iterations = 5
+    alpha = 0.001
 
     #initialize plotting matricies
     avg_fitness = np.empty(num_iterations)
@@ -72,16 +86,19 @@ def main():
         best_x, best_y, best_fit = tournamentSelection(k, x, y, fit)
         child_x, child_y = crossover(best_x, best_y)
         child_x, child_y, child_fit = mutate(child_x, child_y, mutation_rate)
+        
+        #Gradient Descent Hybridization
+        child_x, child_y, child_fit = gradDescent(child_x, child_y, gd_iterations, alpha)
+        
         x = child_x
         y = child_y
         fit = child_fit
-        #print(fit)
-
+        
     min_fit_pos = np.argmin(fit)  
     x_pos = x[min_fit_pos]
     y_pos = y[min_fit_pos]
 
-    print(f"Best fitness is {np.min(fit):.4f} at ({x_pos}, {y_pos}))")
+    print(f"Best fitness is {np.min(fit):.4f} at ({x_pos:.4f}, {y_pos:.4f}))")
     plt.plot(avg_fitness)
     plt.plot(best_fitness)
     plt.xlabel("Generation")

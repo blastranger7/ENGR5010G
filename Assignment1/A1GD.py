@@ -3,11 +3,15 @@ import matplotlib.pyplot as plt
 import math
 from numpy import random
 
+def project(x,y):
+
+    return x,y
+
 def main():
     x = 2
     y = 2
     alpha = 0.001
-    num_iterations = 100
+    num_iterations = 20
     z = np.empty(num_iterations)
     for ii in range(num_iterations):
         zx = 2*x + 20*math.pi*math.sin(2*math.pi*x)
